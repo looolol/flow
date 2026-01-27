@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Env } from './env';
+import { SettingsPage } from './settings-page';
 
-describe('Env', () => {
-  let component: Env;
-  let fixture: ComponentFixture<Env>;
+describe('SettingsPage', () => {
+  let component: SettingsPage;
+  let fixture: ComponentFixture<SettingsPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Env]
+      imports: [SettingsPage]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Env);
+    fixture = TestBed.createComponent(SettingsPage);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

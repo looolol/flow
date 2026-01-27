@@ -13,7 +13,7 @@ export class ScoresService {
   ) {}
 
   async getScoreWeek(): Promise<GameWeekDTO> {
-    const schedule = await this.nhlApi.getScheduleNow();
+    const schedule = await this.nhlApi.getScheduleToday();
 
     for (const date of schedule.gameWeek) {
       await Promise.all(

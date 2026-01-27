@@ -32,3 +32,9 @@ model Game {
 
   @@map("games")
 }
+
+model GameStateLog {
+  id        Int       @id @default(autoincrement())
+  state     String    @unique
+  firstSeen DateTime  @default(now())
+}

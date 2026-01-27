@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { GameDTO } from '../nhl-api/dto/game.dto';
+import { GameFeedItemDTO, normalizeGameState } from '../feed/dto/feed.dto';
+import { Game } from '@prisma/client';
+
+type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
 
 @Injectable()
 export class GameRepository {
@@ -9,16 +13,31 @@ export class GameRepository {
   async upsertFromNHL(game: GameDTO) {
     return this.prisma.game.upsert({
       where: { id: game.id },
-      update: this.mapGame(game),
-      create: {
-        id: game.id,
-        ...this.mapGame(game),
-      },
+      update: this.mapToGame(game),
+      create: this.mapToGame(game),
     });
   }
 
-  private mapGame(game: GameDTO) {
+  async findGamesInDateRange(
+    start: Date,
+    end: Date,
+  ): Promise<GameFeedItemDTO[]> {
+    const games = await this.prisma.game.findMany({
+      where: {
+        startTimeUTC: {
+          gte: start,
+          lte: end,
+        },
+      },
+      orderBy: { startTimeUTC: 'asc' },
+    });
+
+    return games.map((game) => this.mapToGameFeedItemDTO(game));
+  }
+
+  private mapToGame(game: GameDTO): GameCreateInput {
     return {
+      id: game.id,
       season: game.season,
       gameType: game.gameType,
       venue: game.venue.default,
@@ -31,6 +50,17 @@ export class GameRepository {
       gameScheduleState: game.gameScheduleState,
       awayTeamId: game.awayTeam.id,
       homeTeamId: game.homeTeam.id,
-    }
+    };
+  }
+
+  private mapToGameFeedItemDTO(game: Game): GameFeedItemDTO {
+    return {
+      id: game.id,
+      startTimeUTC: game.startTimeUTC,
+      homeTeamId: game.homeTeamId,
+      awayTeamId: game.awayTeamId,
+      gameState: normalizeGameState(game.gameState),
+      gameScheduleState: game.gameScheduleState,
+    };
   }
 }

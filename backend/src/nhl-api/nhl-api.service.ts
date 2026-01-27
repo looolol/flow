@@ -3,15 +3,16 @@ import axios from 'axios';
 import { plainToInstance } from 'class-transformer';
 import { GameWeekDTO } from './dto/game.dto';
 import { validateOrReject } from 'class-validator';
+import { getToday } from '../utils/date.helper';
 
 @Injectable()
 export class NhlApiService {
   private readonly logger = new Logger(NhlApiService.name);
   private readonly baseUrl = process.env.NHL_API_URL;
 
-  async getScheduleNow(): Promise<GameWeekDTO> {
+  async getScheduleToday(): Promise<GameWeekDTO> {
     try {
-      const url = `${this.baseUrl}schedule/now`;
+      const url = `${this.baseUrl}schedule/${getToday()}`;
       this.logger.log(`Fetching ${url}`);
 
       const response = await axios.get(url);

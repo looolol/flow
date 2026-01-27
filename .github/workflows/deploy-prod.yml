@@ -32,7 +32,7 @@ jobs:
 
       - name: Build backend
         working-directory: ./backend
-        run: npm run build
+        run: npm run build:prod
 
       - name: Deploy backend to Render
         env:
@@ -67,7 +67,7 @@ jobs:
 
       - name: Build frontend
         working-directory: ./frontend/flow-frontend
-        run: npm run build
+        run: npm run build:prod
 
       - name: Deploy frontend to Render
         env:

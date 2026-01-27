@@ -5,25 +5,26 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to deploy to production environment'
-        required: true
-        default: 'main'
 
 jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
 
       - name: Install backend dependencies
         working-directory: ./backend
@@ -37,35 +38,41 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-d5rv6mjlr7ts73860nhg" \
+          curl --fail -X POST "https://api.render.com/v1/services/srv-d5rv6mjlr7ts73860nhg/deploys" \
           -H "Accept: application/json" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
+          -H "Authorization: Bearer $RENDER_API_KEY"
 
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
 
-      - name: Install backend dependencies
+      - name: Cache npm dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('frontend/flow-frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
+
+      - name: Install frontend dependencies
         working-directory: ./frontend/flow-frontend
         run: npm ci
 
-      - name: Build backend
+      - name: Build frontend
         working-directory: ./frontend/flow-frontend
         run: npm run build
 
-      - name: Deploy backend to Render
+      - name: Deploy frontend to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-d5rv7hh4tr6s73dkf6ng" \
+          curl --fail -X POST "https://api.render.com/v1/services/srv-d5rv7hh4tr6s73dkf6ng/deploys" \
           -H "Accept: application/json" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
+          -H "Authorization: Bearer $RENDER_API_KEY"

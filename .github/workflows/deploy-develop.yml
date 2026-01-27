@@ -26,12 +26,12 @@ jobs:
           node-version: 24
 
       - name: Cache npm dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: ~/.npm
           key: ${{ runner.os }}-npm-cache-${{ hashFiles('backend/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-npm-cache
+            ${{ runner.os }}-npm-cache-
 
       - name: Install backend dependencies
         working-directory: ./backend
@@ -45,7 +45,7 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/v1/services/srv-d5rvmqggjchc73f5i55g/deploys" \
+          curl --fail -X POST "https://api.render.com/v1/services/srv-d5rvmqggjchc73f5i55g/deploys" \
           -H "Accept: application/json" \
           -H "Authorization: Bearer $RENDER_API_KEY"
 
@@ -68,7 +68,7 @@ jobs:
           path: ~/.npm
           key: ${{ runner.os }}-npm-cache-${{ hashFiles('frontend/flow-frontend/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-npm-cache
+            ${{ runner.os }}-npm-cache-
 
       - name: Install frontend dependencies
         working-directory: ./frontend/flow-frontend
@@ -78,16 +78,10 @@ jobs:
         working-directory: ./frontend/flow-frontend
         run: npm run build
 
-      - name: Check Render API key
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY && secrets.RENDER_API_KEY.length }}
-        run: |
-          echo "Key length: $RENDER_API_KEY"
-
       - name: Deploy frontend to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/v1/services/srv-d5rvngv18n1s73c27kdg/deploys" \
+          curl --fail -X POST "https://api.render.com/v1/services/srv-d5rvngv18n1s73c27kdg/deploys" \
           -H "Accept: application/json" \
           -H "Authorization: Bearer $RENDER_API_KEY"

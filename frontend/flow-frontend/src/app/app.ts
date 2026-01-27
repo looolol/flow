@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import {Header} from './components/header/header';
 import {Navigation} from './components/navigation/navigation';
 import {MatDrawerMode, MatSidenavModule} from '@angular/material/sidenav';
-import {ScreenService} from './services/screen-service';
+import {ScreenService} from './services/screen.service';
 
 @Component({
   selector: 'app-root',

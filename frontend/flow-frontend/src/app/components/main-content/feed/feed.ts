@@ -19,4 +19,6 @@ import {TradeAlertCard} from './trade-alert-card/trade-alert-card';
 })
 export class Feed {
 
+
+
 }

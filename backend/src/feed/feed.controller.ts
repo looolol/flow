@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { GameStateRepository } from './game-state.repository';
+import { GameFeedDTO } from './dto/feed.dto';
 
 @Controller('api/feed')
 export class FeedController {
@@ -10,7 +11,7 @@ export class FeedController {
   ) {}
 
   @Get()
-  async getFeed() {
+  getFeed(): Promise<GameFeedDTO> {
     return this.feedService.getFeed();
   }
 

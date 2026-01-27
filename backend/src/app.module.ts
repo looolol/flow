@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { EnvController } from './env/env.controller';
 import { FeedModule } from './feed/feed.module';
 import { ScoresModule } from './scores/scores.module';
+import { PrismaModule } from './database/prisma.module';
+import { NhlApiModule } from './nhl-api/nhl-api.module';
 
 @Module({
   imports: [
@@ -12,8 +14,10 @@ import { ScoresModule } from './scores/scores.module';
       envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
       isGlobal: true,
     }),
+    PrismaModule,
     FeedModule,
     ScoresModule,
+    NhlApiModule,
   ],
   controllers: [AppController, EnvController],
   providers: [AppService],

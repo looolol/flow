@@ -45,7 +45,7 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-d5rvmqggjchc73f5i55g" \
+          curl -X POST "https://api.render.com/v1/services/srv-d5rvmqggjchc73f5i55g/deploys" \
           -H "Accept: application/json" \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
 
@@ -82,6 +82,6 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST "https://api.render.com/deploy/srv-d5rvngv18n1s73c27kdg" \
+          curl -X POST "https://api.render.com/v1/services/srv-d5rvngv18n1s73c27kdg/deploys" \
           -H "Accept: application/json" \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"

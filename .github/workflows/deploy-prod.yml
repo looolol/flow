@@ -32,7 +32,7 @@ jobs:
 
       - name: Build backend
         working-directory: ./backend
-        run: npm run build:prod
+        run: npm run build
 
       - name: Deploy backend to Render
         env:

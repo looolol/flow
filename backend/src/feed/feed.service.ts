@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import client from '../database/neon-client';
 
 @Injectable()
 export class FeedService {
@@ -11,9 +10,6 @@ export class FeedService {
   }
 
   async getFeed(): Promise<any[]> {
-    const res = await client.query(
-      'SELECT * FROM games ORDER BY game_date DESC',
-    );
-    return res.rows;
+    return await new Promise((resolve) => this.getMockFeed());
   }
 }

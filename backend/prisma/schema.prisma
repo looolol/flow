@@ -5,10 +5,30 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model Game {
+  id             String   @id
+  season         String
+  gameType       Int
+  venue          String
+  neutralSite    Boolean
+  startTimeUTC   DateTime
+  easternUTCOffset String
+  venueUTCOffset String
+  venueTimezone  String
+  gameState      String
+  gameScheduleState String
+  awayTeamId     String
+  homeTeamId     String
+  // add other relevant fields here
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("games")
 }

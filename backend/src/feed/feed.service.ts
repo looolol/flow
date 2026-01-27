@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GameRepository } from '../database/game.repository';
-import { GameFeedDTO, GameFeedItemDTO } from './dto/feed.dto';
+import { FeedItemType, GameFeedDTO, ScoreFeedItemDTO } from '@flow/shared';
 import { getDateRangeEnd, getDateRangeStart } from '../utils/date.helper';
 import { GameStateRepository } from './game-state.repository';
 
@@ -22,36 +22,26 @@ export class FeedService {
     const start = getDateRangeStart();
     const end = getDateRangeEnd();
 
-    const games: GameFeedItemDTO[] = await this.games.findGamesInDateRange(start, end);
+    const scoreItems: ScoreFeedItemDTO[] = await this.games.findGamesInDateRange(start, end);
 
-    for (const game of games) {
-      await this.gameState.logState(game.gameState);
-    }
+    const allItems: FeedItemType[] = [
+      ...scoreItems,
+    ];
 
-    return this.createFeed(games);
+    return this.createFeed(allItems);
   }
 
-  createFeed(games: GameFeedItemDTO[]): GameFeedDTO {
+  createFeed(items: ScoreFeedItemDTO[]): GameFeedDTO {
     const feed: GameFeedDTO = {
-      live: [],
-      upcoming: [],
-      completed: [],
+      items: [],
     };
 
-    for (const game of games) {
-      switch (game.gameState) {
-        case 'LIVE':
-          feed.live.push(game);
-          break;
+    /**
+     * Here is where to generate feed, can sort by importance, etc.
+     */
 
-        case 'OFF':
-          feed.completed.push(game);
-          break;
-
-        case 'FUT':
-        default:
-          feed.upcoming.push(game);
-      }
+    for (const item of items) {
+      feed.items.push(item);
     }
 
     return feed;

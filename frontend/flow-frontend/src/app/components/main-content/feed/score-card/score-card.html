@@ -1,18 +1,18 @@
 <mat-card>
 
   <mat-card-header>
-    <mat-card-title>Game Final</mat-card-title>
-    <mat-card-subtitle>Last Night</mat-card-subtitle>
+    <mat-card-title>{{ data.homeTeamId }} vs {{ data.awayTeamId }}</mat-card-title>
+    <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
   </mat-card-header>
 
   <mat-card-content>
     <div class="team-row">
-      <span>NYR</span>
-      <strong>4</strong>
+      <span>{{ data.homeTeamId }}</span>
+      <strong>home score</strong>
     </div>
     <div class="team-row">
-      <span>BOS</span>
-      <strong>2</strong>
+      <span>{{ data.awayTeamId}}</span>
+      <strong>away score</strong>
     </div>
   </mat-card-content>
 

@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { GameStateRepository } from './game-state.repository';
-import { GameFeedDTO } from './dto/feed.dto';
+import { GameFeedDTO } from '@flow/shared';
 
 @Controller('api/feed')
 export class FeedController {

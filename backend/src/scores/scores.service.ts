@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { NhlApiService } from '../nhl-api/nhl-api.service';
-import { GameWeekDTO } from '../nhl-api/dto/game.dto';
+import { GameWeekDTO } from '@flow/shared';
 import { GameRepository } from '../database/game.repository';
 
 @Injectable()

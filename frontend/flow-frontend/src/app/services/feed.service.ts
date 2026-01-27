@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import { GameFeedDTO } from '@flow/shared';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ export class FeedService {
 
   constructor(private http: HttpClient) {}
 
-  getFeed(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  getFeed(): Observable<GameFeedDTO> {
+    return this.http.get<GameFeedDTO>(`${this.apiUrl}/api/feed`);
   }
 }

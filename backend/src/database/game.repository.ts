@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { GameDTO } from '../nhl-api/dto/game.dto';
-import { GameFeedItemDTO, normalizeGameState } from '../feed/dto/feed.dto';
+import { GameDTO, normalizeGameState, ScoreFeedItemDTO } from '@flow/shared';
 import { Game } from '@prisma/client';
 
 type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
@@ -10,7 +9,7 @@ type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
 export class GameRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async upsertFromNHL(game: GameDTO) {
+  upsertFromNHL(game: GameDTO) {
     return this.prisma.game.upsert({
       where: { id: game.id },
       update: this.mapToGame(game),
@@ -21,7 +20,7 @@ export class GameRepository {
   async findGamesInDateRange(
     start: Date,
     end: Date,
-  ): Promise<GameFeedItemDTO[]> {
+  ): Promise<ScoreFeedItemDTO[]> {
     const games = await this.prisma.game.findMany({
       where: {
         startTimeUTC: {
@@ -32,7 +31,7 @@ export class GameRepository {
       orderBy: { startTimeUTC: 'asc' },
     });
 
-    return games.map((game) => this.mapToGameFeedItemDTO(game));
+    return games.map((game) => this.mapToScoreFeedItemDTO(game));
   }
 
   private mapToGame(game: GameDTO): GameCreateInput {
@@ -53,9 +52,10 @@ export class GameRepository {
     };
   }
 
-  private mapToGameFeedItemDTO(game: Game): GameFeedItemDTO {
+  private mapToScoreFeedItemDTO(game: Game): ScoreFeedItemDTO {
     return {
       id: game.id,
+      type: 'score',
       startTimeUTC: game.startTimeUTC,
       homeTeamId: game.homeTeamId,
       awayTeamId: game.awayTeamId,

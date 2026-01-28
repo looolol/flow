@@ -38,12 +38,27 @@ services:
       - "3000:3000"
     volumes:
       - ./backend:/usr/src/app/backend:cached
-      - ./flow-shared:/usr/src/app/flow-shared:cached
-      - ./package.json:/usr/src/app/package.json:cached
-      - ./package-lock.json:/usr/src/app/package-lock.json:cached
-      - backend_node_modules:/usr/src/app/node_modules
+      - backend_node_modules:/usr/src/app/backend/node_modules
     working_dir: /usr/src/app/backend
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/flow-frontend/Dockerfile.dev
+    container_name: frontend
+    depends_on:
+      - backend
+    restart: on-failure
+    env_file:
+      - .env
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend/flow-frontend:/usr/src/app/flow-frontend:cached
+      - frontend_node_modules:/usr/src/app/flow-frontend/node_modules
+    working_dir: /usr/src/app/flow-frontend
 
 volumes:
   pgdata:
   backend_node_modules:
+  frontend_node_modules:

@@ -13,7 +13,7 @@ export class ScoresService {
     private readonly games: GameRepository,
   ) {}
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_2_HOURS)
   async handleCron() {
     this.logger.log('Fetching updated scores...');
     try {

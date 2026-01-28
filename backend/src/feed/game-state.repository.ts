@@ -13,7 +13,7 @@ export class GameStateRepository {
         create: { state },
       });
     } catch (error) {
-      /* empty */
+      console.error(error);
     }
   }
 

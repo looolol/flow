@@ -7,6 +7,7 @@ import { FeedModule } from './feed/feed.module';
 import { ScoresModule } from './scores/scores.module';
 import { PrismaModule } from './database/prisma.module';
 import { NhlApiModule } from './nhl-api/nhl-api.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NhlApiModule } from './nhl-api/nhl-api.module';
       isGlobal: true,
     }),
     PrismaModule,
+    ScheduleModule.forRoot(),
     FeedModule,
     ScoresModule,
     NhlApiModule,

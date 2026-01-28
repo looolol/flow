@@ -1,9 +1,49 @@
 <div class="feed">
 
-  <app-highlight-card></app-highlight-card>
-  <app-score-card></app-score-card>
-  <app-news-card></app-news-card>
-  <app-fantasy-card></app-fantasy-card>
-  <app-trade-alert-card></app-trade-alert-card>
+  <!-- Loading -->
+  @if(loading()) {
+    <div class="state">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <p>Loading feed...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if(error()) {
+    <mat-card class="error-card">
+      <mat-card-title>Something went wrong</mat-card-title>
+      <mat-card-content>{{ error() }}</mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Feed Content -->
+  @if(feed()) {
+    @for(feedItem of feedItems(); track feedItem.id) {
+      @switch(feedItem.type) {
+
+        @case('score') {
+          <app-score-card [data]="feedItem"></app-score-card>
+        }
+
+
+<!--        @case('fantasy') {-->
+<!--          <app-fantasy-card [data]="feedItem"></app-fantasy-card>-->
+<!--        }-->
+
+<!--        @case('highlight') {-->
+<!--          <app-highlight-card [data]="feedItem"></app-highlight-card>-->
+<!--        }-->
+
+<!--        @case('trade') {-->
+<!--          <app-highlight-card [data]="feedItem"></app-highlight-card>-->
+<!--        }-->
+
+        @default {
+          <!-- Optional: fallback UI -->
+          <div>Unknown feed item type: {{ feedItem.type }}</div>
+        }
+      }
+    }
+  }
 
 </div>

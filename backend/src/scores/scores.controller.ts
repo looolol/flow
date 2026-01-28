@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-import { GameWeekDTO } from '../nhl-api/dto/game.dto';
+import { GameWeekDTO } from '@flow/shared';
 
 @Controller('api/scores')
 export class ScoresController {

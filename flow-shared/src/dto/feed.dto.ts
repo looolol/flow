@@ -8,8 +8,15 @@ export function normalizeGameState(gameState: string): GameState {
     : 'FUT';
 }
 
+export type FeedItemType =
+  | ScoreFeedItemDTO;
+
 export interface GameFeedItemDTO {
   id: string;
+  type: 'score';
+}
+
+export interface ScoreFeedItemDTO extends GameFeedItemDTO {
   startTimeUTC: Date;
   homeTeamId: string;
   awayTeamId: string;
@@ -18,7 +25,5 @@ export interface GameFeedItemDTO {
 }
 
 export interface GameFeedDTO {
-  live: GameFeedItemDTO[];
-  upcoming: GameFeedItemDTO[];
-  completed: GameFeedItemDTO[];
+  items: FeedItemType[];
 }

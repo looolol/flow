@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { plainToInstance } from 'class-transformer';
-import { GameWeekDTO } from './dto/game.dto';
 import { validateOrReject } from 'class-validator';
+import { GameWeekDTO } from '@flow/shared';
 import { getToday } from '../utils/date.helper';
 
 @Injectable()
@@ -17,7 +17,9 @@ export class NhlApiService {
 
       const response = await axios.get(url);
 
-      const dto = plainToInstance(GameWeekDTO, response.data, { enableImplicitConversion: true });
+      const dto = plainToInstance(GameWeekDTO, response.data, {
+        enableImplicitConversion: true,
+      });
       await validateOrReject(dto);
 
       return dto;

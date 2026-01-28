@@ -3,7 +3,7 @@
  * Used for the NHL API, which returns a GameWeek starting on the date
  * So by using -3 from today, we get +/- 3 days from today
  */
-export function getToday(): String {
+export function getToday(): string {
   const today = new Date();
   today.setDate(today.getDate() - 3);
   const yyyy = today.getFullYear();

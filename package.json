@@ -1,0 +1,19 @@
+{
+  "name": "flow-monorepo",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend/flow-frontend",
+    "flow-shared",
+    "postman"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:shared": "npm --workspaces @flow/shared run build",
+    "build:backend": "npm --workspaces backend run build",
+    "build:frontend": "npm --workspaces flow-frontend run build"
+  },
+  "dependencies": {
+    "@nestjs/schedule": "^6.1.0"
+  }
+}

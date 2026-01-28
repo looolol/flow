@@ -39,6 +39,12 @@ jobs:
       - name: Build shared
         run: npm run build --workspace=flow-shared
 
+      - name: Generate Prisma client
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+        run: npx prisma generate
+
       - name: Build backend
         run: npm run build --workspace=backend
 

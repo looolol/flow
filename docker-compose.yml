@@ -26,7 +26,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile.dev
+      dockerfile: backend/Dockerfile
     container_name: backend
     depends_on:
       db:
@@ -44,7 +44,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend/flow-frontend/Dockerfile.dev
+      dockerfile: frontend/flow-frontend/Dockerfile
     container_name: frontend
     depends_on:
       - backend

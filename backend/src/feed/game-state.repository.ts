@@ -13,6 +13,7 @@ export class GameStateRepository {
         create: { state },
       });
     } catch (error) {
+      console.error('Bad GameState', state);
       console.error(error);
     }
   }

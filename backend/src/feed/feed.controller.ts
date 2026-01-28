@@ -1,10 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { GameStateRepository } from './game-state.repository';
 import { GameFeedDTO } from '@flow/shared';
 
 @Controller('api/feed')
 export class FeedController {
+  private readonly logger = new Logger(FeedController.name);
+
   constructor(
     private readonly feedService: FeedService,
     private readonly gameState: GameStateRepository,
@@ -12,6 +14,7 @@ export class FeedController {
 
   @Get()
   getFeed(): Promise<GameFeedDTO> {
+    this.logger.log('Getting feed');
     return this.feedService.getFeed();
   }
 

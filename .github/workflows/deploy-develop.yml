@@ -12,7 +12,7 @@ on:
         default: 'develop'
 
 jobs:
-  deploy-backend:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,18 +29,27 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-cache-${{ hashFiles('backend/package-lock.json') }}
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-cache-
 
       - name: Install backend dependencies
-        working-directory: ./backend
         run: npm ci
 
-      - name: Build backend
-        working-directory: ./backend
-        run: npm run build
+      - name: Build shared
+        run: npm run build --workspace=flow-shared
 
+      - name: Build backend
+        run: npm run build --workspace=backend
+
+      - name: Build frontend
+        run: npm run build --workspace=flow-frontend
+
+
+  deploy-backend:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy backend to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
@@ -50,34 +59,9 @@ jobs:
           -H "Authorization: Bearer $RENDER_API_KEY"
 
   deploy-frontend:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-
-      - name: Cache npm dependencies
-        uses: actions/cache@v5
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-cache-${{ hashFiles('frontend/flow-frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-cache-
-
-      - name: Install frontend dependencies
-        working-directory: ./frontend/flow-frontend
-        run: npm ci
-
-      - name: Build frontend
-        working-directory: ./frontend/flow-frontend
-        run: npm run build:develop
-
       - name: Deploy frontend to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}

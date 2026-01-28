@@ -2,14 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { GameDTO, normalizeGameState, ScoreFeedItemDTO } from '@flow/shared';
 import { Game } from '@prisma/client';
+import { GameStateRepository } from '../feed/game-state.repository';
 
 type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
 
 @Injectable()
 export class GameRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly gameState: GameStateRepository,
+  ) {}
 
-  upsertFromNHL(game: GameDTO) {
+  async upsertFromNHL(game: GameDTO) {
+    await this.gameState.logState(game.gameState);
+
     return this.prisma.game.upsert({
       where: { id: game.id },
       update: this.mapToGame(game),

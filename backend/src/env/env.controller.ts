@@ -9,7 +9,7 @@ export class EnvController {
   getEnvironment() {
     return {
       environment: this.configService.get<string>('APP_ENV'),
-      backendUrl: this.configService.get<string>('CORS_ORIGINS'),
+      cors_origins: this.configService.get<string>('CORS_ORIGINS'),
     };
   }
 }

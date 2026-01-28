@@ -1,0 +1,19 @@
+<mat-toolbar color="primary">
+  @if (showMenuButton()) {
+    <button mat-icon-button (click)="menuClick.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+
+  <span class="title">Flow</span>
+
+  <span class="spacer"></span>
+
+  <button mat-icon-button>
+    <mat-icon>search</mat-icon>
+  </button>
+
+  <button mat-icon-button>
+    <mat-icon>account_circle</mat-icon>
+  </button>
+</mat-toolbar>

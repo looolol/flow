@@ -1,16 +1,26 @@
-import { Component, signal } from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {Env} from './components/env/env';
+import {Header} from './components/header/header';
+import {Navigation} from './components/navigation/navigation';
+import {MatDrawerMode, MatSidenavModule} from '@angular/material/sidenav';
+import {ScreenService} from './services/screen.service';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    Env
+    Header,
+    Navigation,
+    MatSidenavModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('flow-frontend');
+
+  constructor(public screen: ScreenService) {}
+
+  drawerMode = computed(() => this.screen.isMobile() ? 'over' : 'side');
+  drawerOpened = computed(() => !this.screen.isMobile());
+
 }

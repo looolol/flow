@@ -8,9 +8,11 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
+    console.log('Connecting to ', process.env.DATA);
     super({
       adapter: new PrismaPg({
         connectionString: process.env.DATABASE_URL,
+        ssl: process.env.APP_ENV !== 'local',
       }),
       transactionOptions: {
         maxWait: 5000,

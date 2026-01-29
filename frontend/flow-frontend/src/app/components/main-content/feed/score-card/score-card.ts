@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import {MatCardModule} from '@angular/material/card';
-import { ScoreFeedItemDTO } from '@flow/shared';
+import { GameScoreDTO } from '@flow/shared';
 
 @Component({
   selector: 'app-score-card',
@@ -11,53 +11,61 @@ import { ScoreFeedItemDTO } from '@flow/shared';
   styleUrl: './score-card.scss',
 })
 export class ScoreCard {
-  @Input() data!: ScoreFeedItemDTO;
+  data = input.required<GameScoreDTO>();
 
-  get subtitle(): string {
-    if (this.data.gameState == 'LIVE') {
-      return 'Live Now';
-    } else if (this.data.gameState === 'OFF' || this.data.gameState === 'FUT') {
-      const gameDate = new Date(this.data.startTimeUTC);
-      const gameDay = this.getGameDayStr(gameDate);
-      const gameTime = this.getGameTimeStr(gameDate);
+  statusLabel = computed(() => {
+    const gameData = this.data();
+    const state = gameData.gameState;
+    const date = new Date(gameData.game.startTimeUTC);
+    const dayStr =  this.getGameDayStr(date);
+    const timeStr = this.getGameTimeStr(date);
 
-      return `${gameDay} • ${gameTime}`;
-    } else {
-      return 'Final';
+    if (state === 'LIVE') {
+      return 'Live';
     }
+
+    if (state === 'FUT' || state === 'PRE') {
+      return `${dayStr} • ${timeStr}`;
+    }
+
+    if (state === "OFF") {
+      return `Final • ${dayStr}`
+    }
+
+    return `${state} • ${dayStr}`
+  });
+
+  isWinning(team: 'home' | 'away'): boolean {
+    const d = this.data();
+    if (d.gameState === 'FUT' || d.gameState === 'PRE') return false;
+
+    const home = d.homeScore ?? 0;
+    const away = d.awayScore ?? 0;
+
+    return team === 'home' ? home > away : away > home;
   }
 
-  getGameDayStr(gameDate: Date): string {
+  private getGameDayStr(gameDate: Date): string {
     const now = new Date();
-
-    // Clear time for date comparison
-    const gameDay = new Date(gameDate.getFullYear(), gameDate.getMonth(), gameDate.getDate());
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const gameDay = new Date(gameDate.getFullYear(), gameDate.getMonth(), gameDate.getDate());
 
     const diffDays = Math.floor((gameDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-    let dayText = '';
-    if (diffDays === 0) {
-      dayText = 'Today';
-    } else if (diffDays === 1) {
-      dayText = 'Tomorrow';
-    } else if (diffDays === -1) {
-      dayText = 'Yesterday';
-    } else {
-      dayText = gameDate.toLocaleDateString(undefined, {
-        month: 'numeric',
-        day: 'numeric',
-      });
-    }
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays === -1) return 'Yesterday';
 
-    return dayText;
+    return gameDate.toLocaleDateString(undefined, {
+      month: 'numeric',
+      day: 'numeric',
+    });
   }
 
-  getGameTimeStr(gameDate: Date) {
+  private getGameTimeStr(gameDate: Date): string {
     return gameDate.toLocaleTimeString(undefined, {
       hour: '2-digit',
       minute: '2-digit',
     });
   }
-
 }

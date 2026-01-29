@@ -1,7 +1,15 @@
 <div class="feed">
 
+  <!-- Syncing -->
+  @if(syncService.isSyncing()) {
+    <div class="system-status">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <p>Waking up the feed engine... this can take a minute</p>
+    </div>
+  }
+
   <!-- Loading -->
-  @if(loading()) {
+  @if(feedService.loading() && !syncService.isSyncing()) {
     <div class="state">
       <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
       <p>Loading feed...</p>
@@ -9,15 +17,15 @@
   }
 
   <!-- Error -->
-  @if(error()) {
+  @if(feedService.error()) {
     <mat-card class="error-card">
       <mat-card-title>Something went wrong</mat-card-title>
-      <mat-card-content>{{ error() }}</mat-card-content>
+      <mat-card-content>{{ feedService.error() }}</mat-card-content>
     </mat-card>
   }
 
   <!-- Feed Content -->
-  @if(feed()) {
+  @if(feedItems()) {
     @for(feedItem of feedItems(); track feedItem.id) {
       @switch(feedItem.type) {
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Logger } from '@nestjs/common';
+import { Controller, Logger, Post } from '@nestjs/common';
 import { SyncService } from './sync.service';
 
 @Controller('api/sync')
@@ -7,10 +7,9 @@ export class SyncController {
 
   constructor(private readonly syncService: SyncService) {}
 
-  @Get()
+  @Post()
   async triggerSync() {
     this.logger.log('Sync endpoint called');
-    await this.syncService.syncAll();
-    return { message: 'Sync triggered' };
+    return await this.syncService.syncAll();
   }
 }

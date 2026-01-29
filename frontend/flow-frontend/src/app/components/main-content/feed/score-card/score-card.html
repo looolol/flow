@@ -1,19 +1,35 @@
 <mat-card>
-
-  <mat-card-header>
-    <mat-card-title>{{ data.homeTeamId }} vs {{ data.awayTeamId }}</mat-card-title>
-    <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
-  </mat-card-header>
-
   <mat-card-content>
-    <div class="team-row">
-      <span>{{ data.homeTeamId }}</span>
-      <strong>home score</strong>
+    <div class="status-row">
+      <span [class.live-badge]="data().gameState === 'LIVE'">
+        {{ statusLabel() }}
+      </span>
     </div>
-    <div class="team-row">
-      <span>{{ data.awayTeamId}}</span>
-      <strong>away score</strong>
+
+    <div class="team-row" [class.winner]="isWinning('away')">
+      <div class="team-info">
+        <img [src]="data().game.awayTeam.logo" class="team-logo">
+        <span class="team-name">{{ data().game.awayTeam.name }}</span>
+      </div>
+      <div class="score-container">
+        @if(isWinning('away')) {
+          <span class="win-indicator">▶</span>
+        }
+        <span class="score">{{ data().awayScore ?? 0 }}</span>
+      </div>
+    </div>
+
+    <div class="team-row" [class.winner]="isWinning('home')">
+      <div class="team-info">
+        <img [src]="data().game.homeTeam.logo" class="team-logo">
+        <span class="team-name">{{ data().game.homeTeam.name }}</span>
+      </div>
+      <div class="score-container">
+        @if(isWinning('home')) {
+          <span class="win-indicator">▶</span>
+        }
+        <span class="score">{{ data().homeScore ?? 0 }}</span>
+      </div>
     </div>
   </mat-card-content>
-
 </mat-card>

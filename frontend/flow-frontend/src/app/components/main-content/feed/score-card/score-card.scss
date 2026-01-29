@@ -1,7 +1,100 @@
+:host {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.status-row {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+
+  .live-badge {
+    color: #ef5350;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background-color: #ef5350;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+  }
+}
+
 .team-row {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
-  font-size: 16px;
-  font-weight: 600;
+  align-items: center;
+  padding: 6px 0;
+
+  &.winner {
+    .team-name, .score {
+      font-weight: 800;
+      color: var(--mat-sys-on-surface);
+    }
+    background: rgba(var(--mat-sys-primary-rgb), 0.04);
+    margin: 0 -8px; // Pull background to edges of card
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  &:not(.winner) {
+    opacity: 0.8;
+  }
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .team-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .team-name {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+.score-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 60px;
+}
+
+.win-indicator {
+  font-size: 0.8rem;
+  color: var(--mat-sys-primary);
+}
+
+.score {
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
 }

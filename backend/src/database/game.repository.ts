@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { GameDTO, GameScoreDTO } from '@flow/shared';
-import { Game, GameState } from '@prisma/client';
+import { Game, GameState, Team } from '@prisma/client';
 
 type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
+type GameWithTeam = Game & {
+  awayTeam: Team;
+  homeTeam: Team;
+};
 
 @Injectable()
 export class GameRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async upsertFromNHL(game: GameDTO) {
+  async upsertFromGame(game: GameDTO) {
     return this.prisma.game.upsert({
       where: { id: game.id },
       update: this.mapToGame(game),
@@ -18,7 +22,7 @@ export class GameRepository {
   }
 
   async findGamesInDateRange(start: Date, end: Date): Promise<GameScoreDTO[]> {
-    const games = await this.prisma.game.findMany({
+    const games: GameWithTeam[] = await this.prisma.game.findMany({
       where: {
         startTimeUTC: {
           gte: start,
@@ -26,6 +30,10 @@ export class GameRepository {
         },
       },
       orderBy: { startTimeUTC: 'asc' },
+      include: {
+        awayTeam: true,
+        homeTeam: true,
+      },
     });
 
     return games.map((game) => this.mapToScoreFeedItemDTO(game));
@@ -46,15 +54,15 @@ export class GameRepository {
     };
   }
 
-  private mapToScoreFeedItemDTO(game: Game): GameScoreDTO {
+  private mapToScoreFeedItemDTO(game: GameWithTeam): GameScoreDTO {
     return {
       id: game.id,
       type: 'score',
       game: {
         gameId: game.id,
         startTimeUTC: game.startTimeUTC,
-        awayTeamId: game.awayTeamId,
-        homeTeamId: game.homeTeamId,
+        awayTeam: game.awayTeam,
+        homeTeam: game.homeTeam,
       },
       gameState: game.gameState,
       awayScore: game.awayTeamScore ?? undefined,

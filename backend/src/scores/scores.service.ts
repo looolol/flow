@@ -1,35 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { NhlApiService } from '../nhl-api/nhl-api.service';
-import { GameWeekDTO } from '@flow/shared';
+import { IngestionService } from '../injestion/ingestion.service';
 import { GameRepository } from '../database/game.repository';
 import { TeamRepository } from '../database/team.repository';
+import { GameScoreDTO } from '@flow/shared';
+import { getDateRangeEnd, getDateRangeStart } from '../utils/date.helper';
 
 @Injectable()
 export class ScoresService {
   private readonly logger = new Logger(ScoresService.name);
 
   constructor(
-    private readonly nhlApi: NhlApiService,
+    private readonly ingestionService: IngestionService,
     private readonly games: GameRepository,
     private readonly teams: TeamRepository,
   ) {}
 
-  async getScoreWeek(): Promise<GameWeekDTO> {
-    this.logger.log('Fetching score week...');
-    const schedule = await this.nhlApi.getScheduleToday();
+  async getGameScores(): Promise<GameScoreDTO[]> {
+    await this.ingestionService.syncScheduleIfNeeded();
 
-    await Promise.all(
-      schedule.gameWeek.map((date) =>
-        Promise.all(
-          date.games.map(async (game) => {
-            await this.teams.upsertFromTeam(game.awayTeam);
-            await this.teams.upsertFromTeam(game.homeTeam);
-            await this.games.upsertFromNHL(game);
-          }),
-        ),
-      ),
-    );
+    const start = getDateRangeStart();
+    const end = getDateRangeEnd();
 
-    return schedule;
+    const gameScores = await this.games.findGamesInDateRange(start, end);
+
+    return gameScores;
   }
 }

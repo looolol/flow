@@ -1,3 +1,5 @@
+import {TeamInfoDTO} from "./team.dto";
+
 export type FeedItemType =
   | 'score'
 
@@ -14,8 +16,8 @@ export interface FeedItemBaseDTO {
 export interface GameContextDTO {
   gameId: string;
   startTimeUTC: Date;
-  awayTeamId: string;
-  homeTeamId: string;
+  awayTeam: TeamInfoDTO;
+  homeTeam: TeamInfoDTO;
 }
 
 export interface GameScoreDTO extends FeedItemBaseDTO {

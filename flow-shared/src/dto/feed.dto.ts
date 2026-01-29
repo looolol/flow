@@ -1,29 +1,34 @@
-export const GAME_STATES = ['OFF', 'LIVE', 'FUT'] as const;
-
-export type GameState = (typeof GAME_STATES)[number];
-
-export function normalizeGameState(gameState: string): GameState {
-  return GAME_STATES.includes(gameState as GameState)
-    ? (gameState as GameState)
-    : 'FUT';
-}
-
 export type FeedItemType =
-  | ScoreFeedItemDTO;
+  | 'score'
 
-export interface GameFeedItemDTO {
+export type FeedItemDTO =
+  | GameScoreDTO;
+
+export interface FeedItemBaseDTO {
   id: string;
-  type: 'score';
+  type: FeedItemType;
+  createdAt: Date;
+  priority?: number;
 }
 
-export interface ScoreFeedItemDTO extends GameFeedItemDTO {
+export interface GameContextDTO {
+  gameId: string;
   startTimeUTC: Date;
-  homeTeamId: string;
   awayTeamId: string;
-  gameState: GameState;
-  gameScheduleState: string;
+  homeTeamId: string;
+}
+
+export interface GameScoreDTO extends FeedItemBaseDTO {
+  type: 'score';
+
+  game: GameContextDTO;
+
+  gameState: string;
+  homeScore?: number;
+  awayScore?: number;
 }
 
 export interface GameFeedDTO {
-  items: FeedItemType[];
+  items: FeedItemDTO[];
+  generatedAt: Date;
 }

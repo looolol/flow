@@ -1,21 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { GameDTO, normalizeGameState, ScoreFeedItemDTO } from '@flow/shared';
-import { Game } from '@prisma/client';
-import { GameStateRepository } from '../feed/game-state.repository';
+import { GameDTO, GameScoreDTO } from '@flow/shared';
+import { Game, GameState, Team } from '@prisma/client';
 
 type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
+type GameWithTeam = Game & {
+  awayTeam: Team;
+  homeTeam: Team;
+};
 
 @Injectable()
 export class GameRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly gameState: GameStateRepository,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async upsertFromNHL(game: GameDTO) {
-    await this.gameState.logState(game.gameState);
-
+  async upsertFromGame(game: GameDTO) {
     return this.prisma.game.upsert({
       where: { id: game.id },
       update: this.mapToGame(game),
@@ -23,11 +21,8 @@ export class GameRepository {
     });
   }
 
-  async findGamesInDateRange(
-    start: Date,
-    end: Date,
-  ): Promise<ScoreFeedItemDTO[]> {
-    const games = await this.prisma.game.findMany({
+  async findGamesInDateRange(start: Date, end: Date): Promise<GameScoreDTO[]> {
+    const games: GameWithTeam[] = await this.prisma.game.findMany({
       where: {
         startTimeUTC: {
           gte: start,
@@ -35,6 +30,10 @@ export class GameRepository {
         },
       },
       orderBy: { startTimeUTC: 'asc' },
+      include: {
+        awayTeam: true,
+        homeTeam: true,
+      },
     });
 
     return games.map((game) => this.mapToScoreFeedItemDTO(game));
@@ -46,27 +45,34 @@ export class GameRepository {
       season: game.season,
       gameType: game.gameType,
       venue: game.venue.default,
-      neutralSite: game.neutralSite,
       startTimeUTC: game.startTimeUTC,
-      easternUTCOffset: game.easternUTCOffset,
-      venueUTCOffset: game.venueUTCOffset,
-      venueTimezone: game.venueTimezone,
-      gameState: game.gameState,
-      gameScheduleState: game.gameScheduleState,
+      gameState: this.normalizeGameState(game.gameState),
       awayTeamId: game.awayTeam.id,
+      awayTeamScore: game.awayTeam.score,
       homeTeamId: game.homeTeam.id,
+      homeTeamScore: game.homeTeam.score,
     };
   }
 
-  private mapToScoreFeedItemDTO(game: Game): ScoreFeedItemDTO {
+  private mapToScoreFeedItemDTO(game: GameWithTeam): GameScoreDTO {
     return {
       id: game.id,
       type: 'score',
-      startTimeUTC: game.startTimeUTC,
-      homeTeamId: game.homeTeamId,
-      awayTeamId: game.awayTeamId,
-      gameState: normalizeGameState(game.gameState),
-      gameScheduleState: game.gameScheduleState,
+      game: {
+        gameId: game.id,
+        startTimeUTC: game.startTimeUTC,
+        awayTeam: game.awayTeam,
+        homeTeam: game.homeTeam,
+      },
+      gameState: game.gameState,
+      awayScore: game.awayTeamScore ?? undefined,
+      homeScore: game.homeTeamScore ?? undefined,
+      createdAt: game.createdAt,
     };
+  }
+
+  normalizeGameState(rawState: string): GameState {
+    const key = rawState.toUpperCase() as keyof typeof GameState;
+    return GameState[key] ?? GameState.OFF;
   }
 }

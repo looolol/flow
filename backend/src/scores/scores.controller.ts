@@ -1,6 +1,6 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { ScoresService } from './scores.service';
-import { GameWeekDTO } from '@flow/shared';
+import { GameScoreDTO } from '@flow/shared';
 
 @Controller('api/scores')
 export class ScoresController {
@@ -8,9 +8,10 @@ export class ScoresController {
 
   constructor(private readonly scoresService: ScoresService) {}
 
-  @Get('week')
-  async getScoreWeek(): Promise<GameWeekDTO> {
-    this.logger.log('Getting score week');
-    return this.scoresService.getScoreWeek();
+  @Get()
+  async getGameScores(): Promise<GameScoreDTO[]> {
+    this.logger.log('Fetching game scores for feed...');
+
+    return this.scoresService.getGameScores();
   }
 }

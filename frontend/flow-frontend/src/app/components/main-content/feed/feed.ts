@@ -1,13 +1,13 @@
-import {Component, computed, OnInit, signal} from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import {HighlightCard} from './highlight-card/highlight-card';
 import {ScoreCard} from './score-card/score-card';
 import {NewsCard} from './news-card/news-card';
 import {FantasyCard} from './fantasy-card/fantasy-card';
 import {TradeAlertCard} from './trade-alert-card/trade-alert-card';
 import { FeedService } from '../../../services/feed.service';
-import { GameFeedDTO } from '@flow/shared';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { SyncService } from '../../../services/sync.service';
 
 @Component({
   selector: 'app-feed',
@@ -24,24 +24,16 @@ import { MatCardModule } from '@angular/material/card';
   styleUrl: './feed.scss',
 })
 export class Feed implements OnInit {
-  loading = signal(true);
-  error = signal<string | null>(null);
+  protected feedService = inject(FeedService);
+  protected syncService = inject(SyncService);
 
-  feed = signal<GameFeedDTO | null>(null);
-  feedItems = computed(() => this.feed()?.items ?? []);
-
-  constructor(private feedService: FeedService) {}
+  feedItems = computed(() => this.feedService.feed()?.items ?? []);
 
   ngOnInit(): void {
-    this.feedService.getFeed().subscribe({
-      next: (data) => {
-        this.feed.set(data);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Failed to load feed');
-        this.loading.set(false);
-      },
-    });
+    this.load();
+  }
+
+  load() {
+    this.feedService.loadFeed();
   }
 }

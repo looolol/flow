@@ -12,29 +12,56 @@ datasource db {
   provider = "postgresql"
 }
 
+model SystemState {
+  id                Int       @id @default(autoincrement())
+  key               String    @unique
+  value             String
+  updatedAt         DateTime  @updatedAt
+
+  @@map("system")
+}
+
+enum GameState {
+  OFF
+  PRE
+  LIVE
+  FUT
+}
+
 model Game {
-  id             String   @id
-  season         String
-  gameType       Int
-  venue          String
-  neutralSite    Boolean
-  startTimeUTC   DateTime
-  easternUTCOffset String
-  venueUTCOffset String
-  venueTimezone  String
-  gameState      String
-  gameScheduleState String
-  awayTeamId     String
-  homeTeamId     String
-  // add other relevant fields here
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                String    @id
+  season            String
+  gameType          Int
+  venue             String
+  startTimeUTC      DateTime
+  gameState         GameState
+  awayTeamId        String
+  awayTeamScore     Int?
+  homeTeamId        String
+  homeTeamScore     Int?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  awayTeam          Team      @relation("AwayGames", fields: [awayTeamId], references: [id])
+  homeTeam          Team      @relation("HomeGames", fields: [homeTeamId], references: [id])
 
   @@map("games")
 }
 
-model GameStateLog {
-  id        Int       @id @default(autoincrement())
-  state     String    @unique
-  firstSeen DateTime  @default(now())
+model Team {
+  id                String    @id
+  name              String
+  place             String
+  abbrev            String
+  logo              String
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  awayGames         Game[]    @relation("AwayGames")
+  homeGames         Game[]    @relation("HomeGames")
+
+  @@map("teams")
 }

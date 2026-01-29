@@ -1,37 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { NhlApiService } from '../nhl-api/nhl-api.service';
-import { GameWeekDTO } from '@flow/shared';
+import { IngestionService } from '../ingestion/ingestion.service';
 import { GameRepository } from '../database/game.repository';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { TeamRepository } from '../database/team.repository';
+import { GameScoreDTO } from '@flow/shared';
+import { getDateRangeEnd, getDateRangeStart } from '../utils/date.helper';
 
 @Injectable()
 export class ScoresService {
   private readonly logger = new Logger(ScoresService.name);
 
   constructor(
-    private readonly nhlApi: NhlApiService,
+    private readonly ingestionService: IngestionService,
     private readonly games: GameRepository,
+    private readonly teams: TeamRepository,
   ) {}
 
-  @Cron(CronExpression.EVERY_2_HOURS)
-  async handleCron() {
-    this.logger.log('Fetching updated scores...');
-    try {
-      await this.getScoreWeek();
-    } catch (error) {
-      this.logger.error('Error fetching scores...', error);
-    }
-  }
+  async getGameScores(): Promise<GameScoreDTO[]> {
+    await this.ingestionService.syncScheduleIfNeeded();
 
-  async getScoreWeek(): Promise<GameWeekDTO> {
-    const schedule = await this.nhlApi.getScheduleToday();
+    const start = getDateRangeStart();
+    const end = getDateRangeEnd();
 
-    for (const date of schedule.gameWeek) {
-      await Promise.all(
-        date.games.map((game) => this.games.upsertFromNHL(game)),
-      );
-    }
+    const gameScores = await this.games.findGamesInDateRange(start, end);
 
-    return schedule;
+    return gameScores;
   }
 }

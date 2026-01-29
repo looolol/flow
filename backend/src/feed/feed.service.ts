@@ -1,39 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { GameRepository } from '../database/game.repository';
-import { FeedItemType, GameFeedDTO, ScoreFeedItemDTO } from '@flow/shared';
+import { FeedItemDTO, GameFeedDTO, GameScoreDTO } from '@flow/shared';
 import { getDateRangeEnd, getDateRangeStart } from '../utils/date.helper';
-import { GameStateRepository } from './game-state.repository';
 
 @Injectable()
 export class FeedService {
-  constructor(
-    private readonly games: GameRepository,
-    private readonly gameState: GameStateRepository,
-  ) {}
-
-  getMockFeed() {
-    return [
-      { id: 1, title: 'Feed item 1', content: 'Content for feed item 1' },
-      { id: 2, title: 'Feed item 1', content: 'Content for feed item 2' },
-    ];
-  }
+  constructor(private readonly games: GameRepository) {}
 
   async getFeed(): Promise<GameFeedDTO> {
     const start = getDateRangeStart();
     const end = getDateRangeEnd();
 
-    const scoreItems: ScoreFeedItemDTO[] = await this.games.findGamesInDateRange(start, end);
+    const scoreItems: GameScoreDTO[] = await this.games.findGamesInDateRange(start, end);
 
-    const allItems: FeedItemType[] = [
+    const allItems: FeedItemDTO[] = [
       ...scoreItems,
     ];
 
     return this.createFeed(allItems);
   }
 
-  createFeed(items: ScoreFeedItemDTO[]): GameFeedDTO {
+  createFeed(items: FeedItemDTO[]): GameFeedDTO {
     const feed: GameFeedDTO = {
       items: [],
+      generatedAt: new Date(),
     };
 
     /**

@@ -8,6 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import {TeamDTO} from "./team.dto";
 
 export class VenueDTO {
   @IsString()
@@ -29,49 +30,6 @@ export class TVBroadcastDTO {
 
   @IsNumber()
   sequenceNumber: number;
-}
-
-export class TeamNameDTO {
-  @IsString()
-  default: string;
-}
-
-export class TeamDTO {
-  @IsString()
-  id: string;
-
-  @ValidateNested()
-  @Type(() => TeamNameDTO)
-  commonName: TeamNameDTO;
-
-  @ValidateNested()
-  @Type(() => TeamNameDTO)
-  placeName: TeamNameDTO;
-
-  @ValidateNested()
-  @Type(() => TeamNameDTO)
-  placeNameWithPreposition: TeamNameDTO;
-
-  @IsString()
-  abbrev: string;
-
-  @IsString()
-  logo: string;
-
-  @IsString()
-  darkLogo: string;
-
-  @IsOptional()
-  @IsBoolean()
-  awaySplitSquad: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  homeSplitSquad: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  score: number;
 }
 
 export class PeriodDTO {

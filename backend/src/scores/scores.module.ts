@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ScoresController } from './scores.controller';
 import { ScoresService } from './scores.service';
 import { NhlApiModule } from '../nhl-api/nhl-api.module';
-import { IngestionService } from '../injestion/ingestion.service';
+import { IngestionService } from '../ingestion/ingestion.service';
 
 @Module({
   imports: [NhlApiModule],

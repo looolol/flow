@@ -15,4 +15,4 @@ import { IngestionService } from './ingestion.service';
   ],
   exports: [IngestionService],
 })
-export class ScoresModule {}
+export class IngestionModule {}

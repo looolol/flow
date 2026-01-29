@@ -46,11 +46,6 @@ export class IngestionService {
   // Placeholder for live score sync
   async syncLiveScoresIfNeeded() {}
 
-  async syncAll() {
-    await this.syncScheduleIfNeeded();
-    await this.syncLiveScoresIfNeeded();
-  }
-
   isFetchNeeded(lastFetch: string | null, freshness: number) {
     return !lastFetch || Date.now() - new Date(lastFetch).getTime() > freshness;
   }

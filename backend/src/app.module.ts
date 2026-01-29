@@ -6,8 +6,9 @@ import { EnvController } from './env/env.controller';
 import { FeedModule } from './feed/feed.module';
 import { ScoresModule } from './scores/scores.module';
 import { PrismaModule } from './database/prisma.module';
+import { SyncModule } from './sync/sync.module';
 import { NhlApiModule } from './nhl-api/nhl-api.module';
-import { ScheduleModule } from '@nestjs/schedule';
+import { IngestionModule } from './ingestion/ingestionModule';
 
 @Module({
   imports: [
@@ -16,10 +17,11 @@ import { ScheduleModule } from '@nestjs/schedule';
       isGlobal: true,
     }),
     PrismaModule,
-    ScheduleModule.forRoot(),
+    NhlApiModule,
+    IngestionModule,
+    SyncModule,
     FeedModule,
     ScoresModule,
-    NhlApiModule,
   ],
   controllers: [AppController, EnvController],
   providers: [AppService],

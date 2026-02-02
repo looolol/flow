@@ -28,6 +28,9 @@ export interface GameScoreDTO extends FeedItemBaseDTO {
   gameState: string;
   homeScore?: number;
   awayScore?: number;
+
+  period?: number;
+  clock?: string;
 }
 
 export interface GameFeedDTO {

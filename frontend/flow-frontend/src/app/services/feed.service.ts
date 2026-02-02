@@ -29,7 +29,12 @@ export class FeedService {
   );
   public feed = computed(() => this.liveFeed() ?? this.initialFeed());
 
-  public load() {
+  public load(force = false) {
+    if (this.initialFeed() && !force) {
+      console.log('skipping feed...');
+      return;
+    }
+
     this.statusSignal.set('SYNCING');
     this.errorSignal.set(null);
 

@@ -36,8 +36,8 @@ export class SyncService {
     try {
       this.logger.log('Manual/Cold Start sync initiated...');
 
-      await this.ingestionService.syncScheduleIfNeeded();
-      const updated = await this.ingestionService.syncLiveScoresIfNeeded();
+      await this.ingestionService.syncScheduleIfNeeded(true);
+      const updated = await this.ingestionService.syncLiveScoresIfNeeded(true);
 
       if (updated) {
         this.eventEmitter.emit('feed.update', {

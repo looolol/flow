@@ -20,12 +20,24 @@ export class ScoreCard {
     const dayStr =  this.getGameDayStr(date);
     const timeStr = this.getGameTimeStr(date);
 
-    if (state === 'LIVE') {
-      return 'Live';
-    }
+    if (state === 'LIVE' || state === 'CRIT') {
+      let periodStr = 'LIVE';
 
-    if (state === 'CRIT') {
-      return 'CRITICAL';
+      if (gameData.period) {
+        if (gameData.period <= 3) {
+          periodStr = `P${gameData.period}`;;
+        } else if (gameData.period === 4) {
+          periodStr = 'OT';
+        } else if (gameData.period >= 5) {
+          periodStr = 'S/O';
+        }
+      }
+      const clockStr = gameData.clock ? ` • ${gameData.clock}` : '';
+      const prefix = gameData.gameState === 'CRIT' ? '🔥 ' : '';
+
+      const finalClock= periodStr === 'S/O' ? '' : clockStr;
+
+      return `${prefix}${periodStr}${finalClock}`;
     }
 
     if (state === 'FUT' || state === 'PRE') {

@@ -18,10 +18,11 @@ export class IngestionService {
     private readonly nhlApi: NhlApiService,
   ) {}
 
-  async syncScheduleIfNeeded(): Promise<boolean> {
+  async syncScheduleIfNeeded(force: boolean = false): Promise<boolean> {
     return this.runSync({
       key: 'lastScheduleFetch',
       freshness: this.SCHEDULE_FRESHNESS_MS,
+      force,
       fetcher: () => this.nhlApi.getScheduleToday(),
       processor: async (schedule) => {
         for (const date of schedule.gameWeek) {
@@ -36,10 +37,11 @@ export class IngestionService {
   }
 
   // Placeholder for live score sync
-  async syncLiveScoresIfNeeded(): Promise<boolean> {
+  async syncLiveScoresIfNeeded(force: boolean = false): Promise<boolean> {
     return this.runSync({
       key: 'lastLiveScoreFetch',
       freshness: this.LIVE_SCORE_FRESHNESS_MS,
+      force,
       fetcher: () => this.nhlApi.getScoresNow(),
       processor: async (liveScores) => {
         for (const liveGame of liveScores.games) {
@@ -52,18 +54,19 @@ export class IngestionService {
   private async runSync<T>(options: {
     key: string;
     freshness: number;
+    force: boolean;
     fetcher: () => Promise<T>;
     processor: (data: T) => Promise<void>;
   }): Promise<boolean> {
     const lastFetch = await this.systemState.get(options.key);
 
-    if (!this.isFetchNeeded(lastFetch, options.freshness)) {
+    if (!options.force && !this.isFetchNeeded(lastFetch, options.freshness)) {
       this.logger.debug(`${options.key} is fresh, skipping.`);
       return false;
     }
 
     try {
-      this.logger.log(`Syncing ${options.key}...`);
+      this.logger.log(`Syncing ${options.key} (Force: ${options.force})...`);
       const data = await options.fetcher();
       await options.processor(data);
 

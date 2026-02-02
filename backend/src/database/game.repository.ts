@@ -122,6 +122,8 @@ export class GameRepository {
       gameState: game.gameState,
       awayScore: game.awayTeamScore ?? 0,
       homeScore: game.homeTeamScore ?? 0,
+      period: game.period ?? undefined,
+      clock: game.clock ?? undefined,
       createdAt: game.createdAt,
     };
   }

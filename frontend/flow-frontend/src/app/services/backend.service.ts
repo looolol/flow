@@ -2,7 +2,7 @@ import { inject, Injectable, NgZone } from '@angular/core';
 import { GameFeedDTO } from '@flow/shared';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, retry, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +36,8 @@ export class BackendService {
       eventSource.onerror = (err) => this.ngZone.run(() => observer.error(err));
 
       return () => eventSource.close();
-    });
+    }).pipe(
+      retry({ delay: 5000 })
+    );
   }
 }

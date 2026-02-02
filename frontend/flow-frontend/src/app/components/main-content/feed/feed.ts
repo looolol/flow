@@ -7,7 +7,8 @@ import {TradeAlertCard} from './trade-alert-card/trade-alert-card';
 import { FeedService } from '../../../services/feed.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
-import { SyncService } from '../../../services/sync.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-feed',
@@ -18,14 +19,15 @@ import { SyncService } from '../../../services/sync.service';
     FantasyCard,
     TradeAlertCard,
     MatProgressSpinnerModule,
-    MatCardModule
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './feed.html',
   styleUrl: './feed.scss',
 })
 export class Feed implements OnInit {
   protected feedService = inject(FeedService);
-  protected syncService = inject(SyncService);
 
   feedItems = computed(() => this.feedService.feed()?.items ?? []);
 
@@ -33,7 +35,7 @@ export class Feed implements OnInit {
     this.load();
   }
 
-  load() {
-    this.feedService.loadFeed();
+  load(): void {
+    this.feedService.load();
   }
 }

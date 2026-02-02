@@ -9,6 +9,7 @@ import { PrismaModule } from './database/prisma.module';
 import { SyncModule } from './sync/sync.module';
 import { NhlApiModule } from './nhl-api/nhl-api.module';
 import { IngestionModule } from './ingestion/ingestionModule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { IngestionModule } from './ingestion/ingestionModule';
       isGlobal: true,
     }),
     PrismaModule,
+    EventEmitterModule.forRoot(),
     NhlApiModule,
     IngestionModule,
     SyncModule,

@@ -18,8 +18,8 @@ export class IngestionService {
     private readonly nhlApi: NhlApiService,
   ) {}
 
-  async syncScheduleIfNeeded() {
-    await this.runSync({
+  async syncScheduleIfNeeded(): Promise<boolean> {
+    return this.runSync({
       key: 'lastScheduleFetch',
       freshness: this.SCHEDULE_FRESHNESS_MS,
       fetcher: () => this.nhlApi.getScheduleToday(),
@@ -36,8 +36,8 @@ export class IngestionService {
   }
 
   // Placeholder for live score sync
-  async syncLiveScoresIfNeeded() {
-    await this.runSync({
+  async syncLiveScoresIfNeeded(): Promise<boolean> {
+    return this.runSync({
       key: 'lastLiveScoreFetch',
       freshness: this.LIVE_SCORE_FRESHNESS_MS,
       fetcher: () => this.nhlApi.getScoresNow(),
@@ -54,12 +54,12 @@ export class IngestionService {
     freshness: number;
     fetcher: () => Promise<T>;
     processor: (data: T) => Promise<void>;
-  }) {
+  }): Promise<boolean> {
     const lastFetch = await this.systemState.get(options.key);
 
     if (!this.isFetchNeeded(lastFetch, options.freshness)) {
       this.logger.debug(`${options.key} is fresh, skipping.`);
-      return;
+      return false;
     }
 
     try {
@@ -69,8 +69,10 @@ export class IngestionService {
 
       await this.systemState.upsert(options.key, new Date().toISOString());
       this.logger.log(`${options.key} sync complete.`);
+      return true;
     } catch (error) {
       this.logger.error(`Failed to sync ${options.key}: ${error}`);
+      return false;
     }
   }
 

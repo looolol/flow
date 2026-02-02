@@ -1,45 +1,52 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { GameFeedDTO } from '@flow/shared';
 import { BackendService } from './backend.service';
-import { SyncService } from './sync.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, finalize, of, switchMap, tap } from 'rxjs';
+
+export type FeedStatus = 'IDLE' | 'SYNCING' | 'FETCHING' | 'ERROR';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FeedService {
-  private backendService = inject(BackendService);
-  private syncService = inject(SyncService);
+  private backend = inject(BackendService);
 
-  private feedSignal = signal<GameFeedDTO | null>(null);
-  public feed = this.feedSignal.asReadonly();
+  private statusSignal = signal<FeedStatus>('IDLE');
+  public status = this.statusSignal.asReadonly();
 
-  private loadingSignal = signal<boolean>(false);
-  public loading = this.loadingSignal.asReadonly();
-
-  public errorSignal = signal<string | null>(null);
+  private errorSignal = signal<string | null>(null);
   public error = this.errorSignal.asReadonly();
 
+  private initialFeed = signal<GameFeedDTO | null>(null);
+  private liveFeed  = toSignal(
+    this.backend.getFeedStream().pipe(
+      catchError((err) => {
+        console.error('SSE Stream error:', err);
+        return of(null);
+      }),
+    )
+  );
+  public feed = computed(() => this.liveFeed() ?? this.initialFeed());
 
-  loadFeed() {
-    this.loadingSignal.set(true);
+  public load() {
+    this.statusSignal.set('SYNCING');
+    this.errorSignal.set(null);
 
-    this.syncService.sync().subscribe({
-      next: () => {
-        this.backendService.getFeed().subscribe({
-          next: (feed) => {
-            this.feedSignal.set(feed)
-            this.loadingSignal.set(false);
-          },
-          error: (err) => {
-            this.errorSignal.set('Failed to load feed');
-            this.loadingSignal.set(false);
-          }
-        });
+    this.backend.triggerSyncAndGetFeed().pipe(
+      tap(() => this.statusSignal.set('FETCHING')),
+      switchMap(() => this.backend.getFeed()),
+      finalize(() => {
+        if (this.statusSignal() !== 'ERROR') this.statusSignal.set('IDLE');
+      })
+    ).subscribe({
+      next: (data) => {
+        this.initialFeed.set(data);
       },
       error: (err) => {
-        console.error('Cold start failed', err);
-        this.loadingSignal.set(false);
+        this.statusSignal.set('ERROR');
+        this.errorSignal.set('Failed to initialize feed');
       }
-    });
+    })
   }
 }

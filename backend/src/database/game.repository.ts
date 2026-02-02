@@ -90,6 +90,42 @@ export class GameRepository {
     return this.findGamesInDateRange(start, end);
   }
 
+  async getNextGameStartTime(): Promise<Date | null> {
+    const nextGame = await this.prisma.game.findFirst({
+      where: {
+        gameState: {
+          in: ['FUT', 'PRE'],
+        },
+      },
+      orderBy: {
+        startTimeUTC: 'asc',
+      },
+      select: {
+        startTimeUTC: true,
+      },
+    });
+
+    return nextGame ? new Date(nextGame.startTimeUTC) : null;
+  }
+
+  async hasCriticalGames(): Promise<boolean> {
+    const count = await this.prisma.game.count({
+      where: {
+        gameState: 'CRIT',
+      },
+    });
+    return count > 0;
+  }
+
+  async hasActiveGames(): Promise<boolean> {
+    const count = await this.prisma.game.count({
+      where: {
+        gameState: 'LIVE',
+      },
+    });
+    return count > 0;
+  }
+
   private mapToGame(game: GameDTO): GameCreateInput {
     return {
       id: game.id,

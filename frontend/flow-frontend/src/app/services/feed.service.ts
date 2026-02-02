@@ -40,9 +40,9 @@ export class FeedService {
 
     this.backend.triggerSyncAndGetFeed().pipe(
       tap(() => this.statusSignal.set('FETCHING')),
-      switchMap(() => this.backend.getFeed()),
       finalize(() => {
         if (this.statusSignal() !== 'ERROR') this.statusSignal.set('IDLE');
+        this.errorSignal.set(null);
       })
     ).subscribe({
       next: (data) => {

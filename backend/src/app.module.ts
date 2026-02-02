@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -11,6 +11,7 @@ import { NhlApiModule } from './nhl-api/nhl-api.module';
 import { IngestionModule } from './ingestion/ingestionModule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SyncService } from './sync/sync.service';
 
 @Module({
   imports: [
@@ -30,4 +31,8 @@ import { ScheduleModule } from '@nestjs/schedule';
   controllers: [AppController, EnvController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly syncService: SyncService) {}
+
+  onApplicationBootstrap() {}
+}

@@ -55,6 +55,7 @@ model Game {
   homeTeam          Team      @relation("HomeGames", fields: [homeTeamId], references: [id])
 
   @@map("games")
+  @@index([gameState, startTimeUTC])
 }
 
 model Team {

@@ -18,8 +18,8 @@ export class IngestionService {
     private readonly nhlApi: NhlApiService,
   ) {}
 
-  async syncScheduleIfNeeded(force: boolean = false): Promise<boolean> {
-    return this.runSync({
+  async syncScheduleIfNeeded(force: boolean = false): Promise<void> {
+    await this.runSync({
       key: 'lastScheduleFetch',
       freshness: this.SCHEDULE_FRESHNESS_MS,
       force,
@@ -36,9 +36,8 @@ export class IngestionService {
     });
   }
 
-  // Placeholder for live score sync
   async syncLiveScoresIfNeeded(force: boolean = false): Promise<boolean> {
-    return this.runSync({
+    return await this.runSync({
       key: 'lastLiveScoreFetch',
       freshness: this.LIVE_SCORE_FRESHNESS_MS,
       force,

@@ -25,6 +25,7 @@ enum GameState {
   OFF
   PRE
   LIVE
+  CRIT
   FUT
 }
 
@@ -39,6 +40,8 @@ model Game {
   awayTeamScore     Int?
   homeTeamId        String
   homeTeamScore     Int?
+  period            Int?
+  clock             String?
 
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt

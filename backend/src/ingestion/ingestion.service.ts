@@ -19,34 +19,62 @@ export class IngestionService {
   ) {}
 
   async syncScheduleIfNeeded() {
-    const lastFetch = await this.systemState.get('lastScheduleFetch');
-
-    if (this.isFetchNeeded(lastFetch, this.SCHEDULE_FRESHNESS_MS)) {
-      this.logger.log('Schedule stale or missing, fetching new schedule...');
-      const schedule = await this.nhlApi.getScheduleToday();
-
-      for (const date of schedule.gameWeek) {
-        for (const game of date.games) {
-          await this.teams.upsertFromTeam(game.awayTeam);
-          await this.teams.upsertFromTeam(game.homeTeam);
-          await this.games.upsertFromGame(game);
+    await this.runSync({
+      key: 'lastScheduleFetch',
+      freshness: this.SCHEDULE_FRESHNESS_MS,
+      fetcher: () => this.nhlApi.getScheduleToday(),
+      processor: async (schedule) => {
+        for (const date of schedule.gameWeek) {
+          for (const game of date.games) {
+            await this.teams.upsertFromTeam(game.awayTeam);
+            await this.teams.upsertFromTeam(game.homeTeam);
+            await this.games.upsertFromGame(game);
+          }
         }
-      }
-
-      await this.systemState.upsert(
-        'lastScheduleFetch',
-        new Date().toISOString(),
-      );
-      this.logger.log('Schedule sync complete');
-    } else {
-      this.logger.log('Schedule is fresh, skipping fetch.');
-    }
+      },
+    });
   }
 
   // Placeholder for live score sync
-  async syncLiveScoresIfNeeded() {}
+  async syncLiveScoresIfNeeded() {
+    await this.runSync({
+      key: 'lastLiveScoreFetch',
+      freshness: this.LIVE_SCORE_FRESHNESS_MS,
+      fetcher: () => this.nhlApi.getScoresNow(),
+      processor: async (liveScores) => {
+        for (const liveGame of liveScores.games) {
+          await this.games.upsertFromLiveGame(liveGame);
+        }
+      },
+    });
+  }
 
-  isFetchNeeded(lastFetch: string | null, freshness: number) {
+  private async runSync<T>(options: {
+    key: string;
+    freshness: number;
+    fetcher: () => Promise<T>;
+    processor: (data: T) => Promise<void>;
+  }) {
+    const lastFetch = await this.systemState.get(options.key);
+
+    if (!this.isFetchNeeded(lastFetch, options.freshness)) {
+      this.logger.debug(`${options.key} is fresh, skipping.`);
+      return;
+    }
+
+    try {
+      this.logger.log(`Syncing ${options.key}...`);
+      const data = await options.fetcher();
+      await options.processor(data);
+
+      await this.systemState.upsert(options.key, new Date().toISOString());
+      this.logger.log(`${options.key} sync complete.`);
+    } catch (error) {
+      this.logger.error(`Failed to sync ${options.key}: ${error}`);
+    }
+  }
+
+  private isFetchNeeded(lastFetch: string | null, freshness: number) {
     return !lastFetch || Date.now() - new Date(lastFetch).getTime() > freshness;
   }
 }

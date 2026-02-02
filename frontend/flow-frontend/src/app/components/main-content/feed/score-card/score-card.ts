@@ -24,6 +24,10 @@ export class ScoreCard {
       return 'Live';
     }
 
+    if (state === 'CRIT') {
+      return 'CRITICAL';
+    }
+
     if (state === 'FUT' || state === 'PRE') {
       return `${dayStr} • ${timeStr}`;
     }

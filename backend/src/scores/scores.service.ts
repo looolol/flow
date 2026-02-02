@@ -15,14 +15,18 @@ export class ScoresService {
     private readonly teams: TeamRepository,
   ) {}
 
-  async getGameScores(): Promise<GameScoreDTO[]> {
+  async getSchedule(): Promise<GameScoreDTO[]> {
     await this.ingestionService.syncScheduleIfNeeded();
 
     const start = getDateRangeStart();
     const end = getDateRangeEnd();
 
-    const gameScores = await this.games.findGamesInDateRange(start, end);
+    return await this.games.findGamesInDateRange(start, end);
+  }
 
-    return gameScores;
+  async getLiveScores(): Promise<GameScoreDTO[]> {
+    await this.ingestionService.syncLiveScoresIfNeeded();
+
+    return await this.games.findGamesToday();
   }
 }

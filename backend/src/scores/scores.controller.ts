@@ -8,10 +8,17 @@ export class ScoresController {
 
   constructor(private readonly scoresService: ScoresService) {}
 
-  @Get()
-  async getGameScores(): Promise<GameScoreDTO[]> {
-    this.logger.log('Fetching game scores for feed...');
+  @Get('schedule')
+  async getSchedule(): Promise<GameScoreDTO[]> {
+    this.logger.log('Fetching schedule...');
 
-    return this.scoresService.getGameScores();
+    return this.scoresService.getSchedule();
+  }
+
+  @Get('live')
+  async getGameScores(): Promise<GameScoreDTO[]> {
+    this.logger.log('Fetching live game updates...');
+
+    return this.scoresService.getLiveScores();
   }
 }

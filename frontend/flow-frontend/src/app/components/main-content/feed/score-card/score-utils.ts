@@ -11,7 +11,8 @@ export function getSimulatedClock(d: GameScoreDTO): string {
   let seconds = d.secondsRemaining ?? 0;
 
   if (d.clockRunning && seconds > 0) {
-    const drift = Math.floor((Date.now() - new Date(d.updatedAt).getTime()) / 1000);
+    const lastUpdate = new Date(d.updatedAt).getTime();
+    const drift = Math.floor((Date.now() - lastUpdate) / 1000);
     seconds = Math.max(0, seconds - drift);
   }
 

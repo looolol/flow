@@ -4,6 +4,7 @@
       <span
         [class.live-badge]="data().gameState === 'LIVE' || data().gameState === 'CRIT'"
         [class.is-crit]="data().gameState === 'CRIT'"
+        [class.is-paused]="!data().clockRunning"
         [class.in-intermission]="data().inIntermission"
       >
         {{ data() | scoreStatus: tick() }}

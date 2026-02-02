@@ -34,6 +34,12 @@ mat-card {
       background-color: #ef5350;
       border-radius: 50%;
       animation: pulse 1.5s infinite;
+      transition: opacity 0.3s ease;
+    }
+
+    &.is-paused::before {
+      animation: none;
+      opacity: 0.5;
     }
 
     &.is-crit {
@@ -43,6 +49,10 @@ mat-card {
       &::before {
         background-color: #ff9800;
         box-shadow: 0 0 8px #ff9800; // Gives the dot a glow
+      }
+
+      &.is-paused::before {
+        box-shadow: none;
       }
     }
 

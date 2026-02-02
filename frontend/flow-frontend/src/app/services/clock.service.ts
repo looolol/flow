@@ -6,5 +6,5 @@ import { interval } from 'rxjs';
   providedIn: 'root',
 })
 export class ClockService {
-  tick = toSignal(interval(1000));
+  tick = toSignal(interval(1000), { initialValue: 0});
 }

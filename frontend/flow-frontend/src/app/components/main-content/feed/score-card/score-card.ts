@@ -13,11 +13,26 @@ import { ScoreStatusPipe } from './score-status.pipe';
 export class ScoreCard {
   data = input.required<GameScoreDTO>();
   private clock = inject(ClockService);
+  protected tick = this.clock.tick;
 
   home = computed(() => this.mapTeam('home'));
   away = computed(() => this.mapTeam('away'));
 
-  protected tick = this.clock.tick;
+  /* DEBUG */
+  // rawSnapshot = input.required<GameScoreDTO>({ alias: 'data' });
+  // data = computed(() => {
+  //   const real = this.rawSnapshot();
+  //
+  //   return {
+  //     ...real,
+  //     gameState: 'LIVE',
+  //     period: 3,
+  //     secondsRemaining: 150, //2:25 left
+  //     clockRunning: true,
+  //     inIntermission: false,
+  //     updatedAt: new Date(),
+  //   };
+  // });
 
   private mapTeam(type: 'home' | 'away') {
     const d = this.data();

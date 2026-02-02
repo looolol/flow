@@ -15,37 +15,42 @@ export class ScoreCard {
 
   statusLabel = computed(() => {
     const gameData = this.data();
-    const state = gameData.gameState;
     const date = new Date(gameData.game.startTimeUTC);
-    const dayStr =  this.getGameDayStr(date);
-    const timeStr = this.getGameTimeStr(date);
+
+    const state = gameData.gameState;
+    const period = gameData.period;
+    const clock = gameData.clock;
 
     if (state === 'LIVE' || state === 'CRIT') {
       let periodStr = 'LIVE';
 
-      if (gameData.period) {
-        if (gameData.period <= 3) {
-          periodStr = `P${gameData.period}`;;
-        } else if (gameData.period === 4) {
+      if (period) {
+        if (period <= 3) {
+          periodStr = `P${period}`;;
+        } else if (period === 4) {
           periodStr = 'OT';
-        } else if (gameData.period >= 5) {
+        } else if (period >= 5) {
           periodStr = 'S/O';
         }
       }
-      const clockStr = gameData.clock ? ` • ${gameData.clock}` : '';
-      const prefix = gameData.gameState === 'CRIT' ? '🔥 ' : '';
+      const clockStr = clock ? ` • ${clock}` : '';
+      const prefix = state === 'CRIT' ? '🔥 ' : '';
 
       const finalClock= periodStr === 'S/O' ? '' : clockStr;
 
       return `${prefix}${periodStr}${finalClock}`;
     }
 
+    const dayStr =  this.getGameDayStr(date);
+    const timeStr = this.getGameTimeStr(date);
+
     if (state === 'FUT' || state === 'PRE') {
       return `${dayStr} • ${timeStr}`;
     }
 
     if (state === "OFF") {
-      return `Final • ${dayStr}`
+      const suffix = period === 4 ? '/OT' : period && period >= 5 ? '/SO' : '';
+      return `Final${suffix} • ${dayStr}`
     }
 
     return `${state} • ${dayStr}`

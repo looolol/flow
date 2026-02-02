@@ -10,6 +10,7 @@ export interface FeedItemBaseDTO {
   id: string;
   type: FeedItemType;
   createdAt: Date;
+  updatedAt: Date;
   priority?: number;
 }
 
@@ -22,15 +23,20 @@ export interface GameContextDTO {
 
 export interface GameScoreDTO extends FeedItemBaseDTO {
   type: 'score';
-
   game: GameContextDTO;
 
   gameState: string;
-  homeScore?: number;
+
   awayScore?: number;
+  homeScore?: number;
+
+  awaySOG?: number;
+  homeSOG?: number;
 
   period?: number;
-  clock?: string;
+  secondsRemaining?: number;
+  clockRunning?: boolean;
+  inIntermission?: boolean;
 }
 
 export interface GameFeedDTO {

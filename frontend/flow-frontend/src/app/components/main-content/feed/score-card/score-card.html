@@ -1,35 +1,34 @@
 <mat-card>
   <mat-card-content>
     <div class="status-row">
-      <span [class.live-badge]="data().gameState === 'LIVE'">
-        {{ statusLabel() }}
+      <span
+        [class.live-badge]="data().gameState === 'LIVE' || data().gameState === 'CRIT'"
+        [class.is-crit]="data().gameState === 'CRIT'"
+        [class.in-intermission]="data().inIntermission"
+      >
+        {{ data() | scoreStatus: tick() }}
       </span>
     </div>
 
-    <div class="team-row" [class.winner]="isWinning('away')">
-      <div class="team-info">
-        <img [src]="data().game.awayTeam.logo" class="team-logo">
-        <span class="team-name">{{ data().game.awayTeam.name }}</span>
-      </div>
-      <div class="score-container">
-        @if(isWinning('away')) {
-          <span class="win-indicator">▶</span>
-        }
-        <span class="score">{{ data().awayScore ?? 0 }}</span>
-      </div>
-    </div>
+    @for (team of [away(), home()]; track team.name) {
+      <div class="team-row" [class.winner]="team.isWinner">
 
-    <div class="team-row" [class.winner]="isWinning('home')">
-      <div class="team-info">
-        <img [src]="data().game.homeTeam.logo" class="team-logo">
-        <span class="team-name">{{ data().game.homeTeam.name }}</span>
+        <div class="team-info">
+          <img [src]="team.logo" class="team-logo" alt="{{team.name}}">
+          <div class="name-column">
+            <span class="team-name">{{ team.name}}</span>
+            @if (data().gameState !== 'FUT') {
+              <span class="sog-label">{{ team.sog }} SOG</span>
+            }
+          </div>
+        </div>
+
+        <div class="score-container">
+          @if(team.isWinner) { <span class="win-indicator">▶</span> }
+          <span class="score">{{ team.score }}</span>
+        </div>
+
       </div>
-      <div class="score-container">
-        @if(isWinning('home')) {
-          <span class="win-indicator">▶</span>
-        }
-        <span class="score">{{ data().homeScore ?? 0 }}</span>
-      </div>
-    </div>
+    }
   </mat-card-content>
 </mat-card>

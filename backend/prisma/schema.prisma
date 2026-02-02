@@ -38,10 +38,14 @@ model Game {
   gameState         GameState
   awayTeamId        String
   awayTeamScore     Int?
+  awayTeamSOG       Int?
   homeTeamId        String
   homeTeamScore     Int?
+  homeTeamSOG       Int?
   period            Int?
-  clock             String?
+  secondsRemaining  Int?
+  clockRunning      Boolean   @default(false)
+  inIntermission    Boolean   @default(false)
 
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt

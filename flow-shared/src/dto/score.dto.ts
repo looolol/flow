@@ -10,8 +10,8 @@ export class ClockDTO {
     @IsString()
     timeRemaining: string;
 
-    @IsString()
-    secondsRemaining: string;
+    @IsNumber()
+    secondsRemaining: number;
 
     @IsBoolean()
     running: boolean;

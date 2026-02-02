@@ -6,7 +6,15 @@ import { Game, GameState, Team } from '@prisma/client';
 type GameCreateInput = Omit<Game, 'createdAt' | 'updatedAt'>;
 type GameLiveUpdateInput = Pick<
   Game,
-  'awayTeamScore' | 'homeTeamScore' | 'gameState' | 'period' | 'clock'
+  | 'awayTeamScore'
+  | 'homeTeamScore'
+  | 'awayTeamSOG'
+  | 'homeTeamSOG'
+  | 'gameState'
+  | 'period'
+  | 'secondsRemaining'
+  | 'clockRunning'
+  | 'inIntermission'
 >;
 type GameWithTeam = Game & {
   awayTeam: Team;
@@ -92,10 +100,14 @@ export class GameRepository {
       gameState: this.normalizeGameState(game.gameState),
       awayTeamId: game.awayTeam.id,
       awayTeamScore: game.awayTeam.score,
+      awayTeamSOG: null,
       homeTeamId: game.homeTeam.id,
       homeTeamScore: game.homeTeam.score,
+      homeTeamSOG: null,
       period: null,
-      clock: null,
+      secondsRemaining: null,
+      clockRunning: false,
+      inIntermission: false,
     };
   }
 
@@ -103,9 +115,13 @@ export class GameRepository {
     return {
       awayTeamScore: liveGame.awayTeam.score ?? 0,
       homeTeamScore: liveGame.homeTeam.score ?? 0,
+      awayTeamSOG: liveGame.awayTeam.sog ?? 0,
+      homeTeamSOG: liveGame.homeTeam.sog ?? 0,
       gameState: this.normalizeGameState(liveGame.gameState),
       period: liveGame.period ?? null,
-      clock: liveGame.clock?.timeRemaining ?? null,
+      secondsRemaining: liveGame.clock?.secondsRemaining ?? null,
+      clockRunning: liveGame.clock?.running ?? false,
+      inIntermission: liveGame.clock?.inIntermission ?? false,
     };
   }
 
@@ -122,9 +138,13 @@ export class GameRepository {
       gameState: game.gameState,
       awayScore: game.awayTeamScore ?? 0,
       homeScore: game.homeTeamScore ?? 0,
+      awaySOG: game.awayTeamSOG ?? 0,
+      homeSOG: game.homeTeamSOG ?? 0,
       period: game.period ?? undefined,
-      clock: game.clock ?? undefined,
+      secondsRemaining: game.secondsRemaining ?? undefined,
+      inIntermission: game.inIntermission,
       createdAt: game.createdAt,
+      updatedAt: game.updatedAt,
     };
   }
 

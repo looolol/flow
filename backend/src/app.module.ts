@@ -10,6 +10,7 @@ import { SyncModule } from './sync/sync.module';
 import { NhlApiModule } from './nhl-api/nhl-api.module';
 import { IngestionModule } from './ingestion/ingestionModule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -17,8 +18,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
       isGlobal: true,
     }),
-    PrismaModule,
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
+    PrismaModule,
     NhlApiModule,
     IngestionModule,
     SyncModule,

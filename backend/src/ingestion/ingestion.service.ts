@@ -9,7 +9,7 @@ export class IngestionService {
   private readonly logger = new Logger(IngestionService.name);
 
   private readonly SCHEDULE_FRESHNESS_MS = 12 * 60 * 60 * 1000; // 12 hours
-  private readonly LIVE_SCORE_FRESHNESS_MS = 1 * 60 * 1000; // 1 minutes
+  private readonly LIVE_SCORE_FRESHNESS_MS = 25 * 1000; // 30 seconds
 
   constructor(
     private readonly systemState: SystemStateRepository,

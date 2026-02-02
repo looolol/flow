@@ -19,14 +19,14 @@ Establish the foundational pipeline:
 
 ### 🧱 Data Hydration Foundation
 
-- [ ] Create **SystemState** tracking
+- [X] Create **SystemState** tracking
     - lastScheduleSync
     - lastScoreSync
     - syncLock
 
-- [ ] Build unified **/sync** endpoint
+- [X] Build unified **/sync** endpoint
 - [ ] Add sync lock to prevent duplicate NHL calls
-- [ ] Add freshness checks before external API calls
+- [X] Add freshness checks before external API calls
 
 ---
 
@@ -34,9 +34,9 @@ Establish the foundational pipeline:
 
 **Goal: Games exist in DB**
 
-- [ ] Implement NHL `schedule/today` ingestion
-- [ ] Transform NHL data → internal Game model
-- [ ] Upsert games (no duplicates)
+- [X] Implement NHL `schedule/today` ingestion
+- [X] Transform NHL data → internal Game model
+- [X] Upsert games (no duplicates)
 
 Store:
 - startTime
@@ -54,10 +54,10 @@ Store:
 
 **Goal: Games become live, changing objects**
 
-- [ ] Implement NHL `scores/now` ingestion
-- [ ] Store:
-    - homeScore
-    - awayScore
+- [X] Implement NHL `scores/now` ingestion
+- [X] Store:
+    - [X] homeScore
+    - [X] awayScore
     - period
     - clock
 
@@ -71,12 +71,12 @@ Store:
 
 **Goal: Replace team IDs with real info**
 
-- [ ] Teams table
-- [ ] Store:
+- [X] Teams table
+- [X] Store:
     - name
     - abbreviation
     - logo
-- [ ] Map Game → Team relation
+- [X] Map Game → Team relation
 
 ---
 
@@ -104,7 +104,7 @@ Emit events when:
 
 ### 🖥 Frontend Wiring
 
-- [ ] Call `/sync` on app load
+- [X] Call `/sync` on app load
 - [ ] Poll `/sync` when LIVE games exist
 - [ ] Switch UI to `/feed` endpoint
 - [ ] Render:

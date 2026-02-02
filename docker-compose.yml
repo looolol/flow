@@ -32,6 +32,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    tty: true
+    stdin_open: true
     env_file:
       - .env
     ports:
@@ -49,6 +51,10 @@ services:
     depends_on:
       - backend
     restart: on-failure
+    tty: true
+    stdin_open: true
+    environment:
+      - NG_CLI_ANALYTICS=false
     env_file:
       - .env
     ports:

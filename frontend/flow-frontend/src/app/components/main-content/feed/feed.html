@@ -1,7 +1,7 @@
 <div class="feed">
 
   <!-- Syncing -->
-  @if(syncService.isSyncing()) {
+  @if(feedService.status() === 'SYNCING') {
     <div class="system-status">
       <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
       <p>Waking up the feed engine... this can take a minute</p>
@@ -9,7 +9,7 @@
   }
 
   <!-- Loading -->
-  @if(feedService.loading() && !syncService.isSyncing()) {
+  @if(feedService.status() === 'FETCHING') {
     <div class="state">
       <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
       <p>Loading feed...</p>
@@ -21,11 +21,14 @@
     <mat-card class="error-card">
       <mat-card-title>Something went wrong</mat-card-title>
       <mat-card-content>{{ feedService.error() }}</mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="load()">Retry</button>
+      </mat-card-actions>
     </mat-card>
   }
 
   <!-- Feed Content -->
-  @if(feedItems()) {
+  @if(feedItems().length > 0) {
     @for(feedItem of feedItems(); track feedItem.id) {
       @switch(feedItem.type) {
 
@@ -52,6 +55,11 @@
         }
       }
     }
+  } @else if (feedService.status() === 'IDLE' && feedItems().length === 0) {
+    <div class="empty-state">
+      <mat-icon>sports_hockey</mat-icon>
+      <p>No games or updates found for today.</p>
+    </div>
   }
 
 </div>

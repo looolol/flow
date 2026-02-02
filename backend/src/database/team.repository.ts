@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { Team } from '@prisma/client';
-import { TeamDTO, TeamInfoDTO } from '@flow/shared/dist/dto/team.dto';
+import { TeamDTO, TeamInfoDTO } from '@flow/shared';
 
 type TeamCreateInput = Omit<Team, 'createdAt' | 'updatedAt'>;
 
@@ -10,10 +10,16 @@ export class TeamRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async upsertFromTeam(team: TeamDTO): Promise<Team> {
-    return this.prisma.team.upsert({
+    const existing = await this.prisma.team.findUnique({
       where: { id: team.id },
-      create: this.mapToTeam(team),
-      update: this.mapToTeam(team),
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    return this.prisma.team.create({
+      data: this.mapToTeam(team),
     });
   }
 

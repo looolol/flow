@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SyncService } from './sync.service';
+import { ClockService } from './clock.service';
 
-describe('SyncService', () => {
-  let service: SyncService;
+describe('ClockService', () => {
+  let service: ClockService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SyncService);
+    service = TestBed.inject(ClockService);
   });
 
   it('should be created', () => {

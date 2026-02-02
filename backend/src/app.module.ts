@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -9,6 +9,9 @@ import { PrismaModule } from './database/prisma.module';
 import { SyncModule } from './sync/sync.module';
 import { NhlApiModule } from './nhl-api/nhl-api.module';
 import { IngestionModule } from './ingestion/ingestionModule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SyncService } from './sync/sync.service';
 
 @Module({
   imports: [
@@ -16,6 +19,8 @@ import { IngestionModule } from './ingestion/ingestionModule';
       envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
       isGlobal: true,
     }),
+    EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     PrismaModule,
     NhlApiModule,
     IngestionModule,
@@ -26,4 +31,8 @@ import { IngestionModule } from './ingestion/ingestionModule';
   controllers: [AppController, EnvController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly syncService: SyncService) {}
+
+  onApplicationBootstrap() {}
+}

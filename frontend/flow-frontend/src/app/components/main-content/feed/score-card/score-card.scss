@@ -1,14 +1,15 @@
 :host {
-  display: flex;
-  justify-content: center;
+  display: block; // Changed to block for easier margin management
   margin-bottom: 1rem;
+  padding: 0 16px; // Padding for mobile responsiveness
 }
 
 mat-card {
   width: 100%;
   max-width: 700px;
+  margin: 0 auto;
   border-radius: 12px;
-  padding: 8px;
+  padding: 12px; // Slightly more breathable
 }
 
 .status-row {
@@ -16,22 +17,52 @@ mat-card {
   font-weight: 700;
   text-transform: uppercase;
   color: var(--mat-sys-on-surface-variant);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   letter-spacing: 0.05em;
 
   .live-badge {
     color: #ef5350;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    font-family: 'Roboto Mono', monospace; // Keeps clock steady
 
     &::before {
       content: '';
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       background-color: #ef5350;
       border-radius: 50%;
       animation: pulse 1.5s infinite;
+      transition: opacity 0.3s ease;
+    }
+
+    &.is-paused::before {
+      animation: none;
+      opacity: 0.5;
+    }
+
+    &.is-crit {
+      color: #ff9800; // Warning Orange
+      font-weight: 800;
+
+      &::before {
+        background-color: #ff9800;
+        box-shadow: 0 0 8px #ff9800; // Gives the dot a glow
+      }
+
+      &.is-paused::before {
+        box-shadow: none;
+      }
+    }
+
+    &.in-intermission {
+      color: var(--mat-sys-outline);
+      &::before {
+        background-color: var(--mat-sys-outline);
+        animation: none; // Static dot when play is stopped
+        opacity: 0.6;
+      }
     }
   }
 }
@@ -40,61 +71,75 @@ mat-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 8px; // Uniform padding
+  border-radius: 8px; // Rounded background for winners
+  transition: background-color 0.2s ease;
 
   &.winner {
+    background: rgba(var(--mat-sys-primary-rgb, 0, 0, 0), 0.08); // Slight increase for visibility
     .team-name, .score {
       font-weight: 800;
       color: var(--mat-sys-on-surface);
     }
-    background: rgba(var(--mat-sys-primary-rgb), 0.04);
-    margin: 0 -8px; // Pull background to edges of card
-    padding: 8px;
-    border-radius: 4px;
   }
 
   &:not(.winner) {
-    opacity: 0.8;
+    opacity: 0.85;
   }
 }
 
 .team-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 
   .team-logo {
-    width: 32px;
-    height: 32px;
+    width: 40px; // Slightly larger for clarity
+    height: 40px;
     object-fit: contain;
   }
 
-  .team-name {
-    font-size: 1rem;
-    font-weight: 500;
+  .name-column {
+    display: flex;
+    flex-direction: column;
+
+    .team-name {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .sog-label {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--mat-sys-outline);
+      text-transform: uppercase;
+    }
   }
 }
 
 .score-container {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  min-width: 60px;
-}
+  gap: 12px;
 
-.win-indicator {
-  font-size: 0.8rem;
-  color: var(--mat-sys-primary);
-}
+  .win-indicator {
+    font-size: 0.7rem;
+    color: var(--mat-sys-primary);
+    transform: translateY(-1px); // Optical alignment
+  }
 
-.score {
-  font-size: 1.3rem;
-  font-variant-numeric: tabular-nums;
+  .score {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 1.5ch; // Prevents layout shift between 9 and 10
+    text-align: right;
+  }
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
 }

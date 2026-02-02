@@ -25,6 +25,7 @@ enum GameState {
   OFF
   PRE
   LIVE
+  CRIT
   FUT
 }
 
@@ -37,8 +38,14 @@ model Game {
   gameState         GameState
   awayTeamId        String
   awayTeamScore     Int?
+  awayTeamSOG       Int?
   homeTeamId        String
   homeTeamScore     Int?
+  homeTeamSOG       Int?
+  period            Int?
+  secondsRemaining  Int?
+  clockRunning      Boolean   @default(false)
+  inIntermission    Boolean   @default(false)
 
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -48,6 +55,7 @@ model Game {
   homeTeam          Team      @relation("HomeGames", fields: [homeTeamId], references: [id])
 
   @@map("games")
+  @@index([gameState, startTimeUTC])
 }
 
 model Team {
